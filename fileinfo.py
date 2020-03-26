@@ -391,3 +391,33 @@ def askstring(title, prompt, **kw):
     '''
     d = _QueryString(title, prompt, **kw)
     return d.result
+
+
+
+if __name__ == '__main__':
+
+    def test():
+        root = Tk()
+        def doit(root=root):
+            d = SimpleDialog(root,
+                         text="This is a test dialog.  "
+                              "Would this have been an actual dialog, "
+                              "the buttons below would have been glowing "
+                              "in soft pink light.\n"
+                              "Do you believe this?",
+                         buttons=["Yes", "No", "Cancel"],
+                         default=0,
+                         cancel=2,
+                         title="Test Dialog")
+            print(d.go())
+            print(askinteger("Spam", "Egg count", initialvalue=12*12))
+            print(askfloat("Spam", "Egg weight\n(in tons)", minvalue=1,
+                           maxvalue=100))
+            print(askstring("Spam", "Egg label"))
+        t = Button(root, text='Test', command=doit)
+        t.pack()
+        q = Button(root, text='Quit', command=t.quit)
+        q.pack()
+        t.mainloop()
+
+    test()
