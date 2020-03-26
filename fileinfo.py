@@ -377,3 +377,17 @@ class _QueryString(_QueryDialog):
 
     def getresult(self):
         return self.entry.get()
+
+def askstring(title, prompt, **kw):
+    '''get a string from the user
+
+    Arguments:
+
+        title -- the dialog title
+        prompt -- the label text
+        **kw -- see SimpleDialog class
+
+    Return value is a string
+    '''
+    d = _QueryString(title, prompt, **kw)
+    return d.result
