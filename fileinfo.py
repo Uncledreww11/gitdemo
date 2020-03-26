@@ -287,3 +287,93 @@ class _QueryDialog(Dialog):
             self.entry.select_range(0, END)
 
         return self.entry
+
+    def validate(self):
+        try:
+            result = self.getresult()
+        except ValueError:
+            messagebox.showwarning(
+                "Illegal value",
+                self.errormessage + "\nPlease try again",
+                parent = self
+            )
+            return 0
+
+        if self.minvalue is not None and result < self.minvalue:
+            messagebox.showwarning(
+                "Too small",
+                "The allowed minimum value is %s. "
+                "Please try again." % self.minvalue,
+                parent = self
+            )
+            return 0
+
+        if self.maxvalue is not None and result > self.maxvalue:
+            messagebox.showwarning(
+                "Too large",
+                "The allowed maximum value is %s. "
+                "Please try again." % self.maxvalue,
+                parent = self
+            )
+            return 0
+
+        self.result = result
+
+        return 1
+
+
+class _QueryInteger(_QueryDialog):
+    errormessage = "Not an integer."
+    def getresult(self):
+        return self.getint(self.entry.get())
+
+def askinteger(title, prompt, **kw):
+    '''get an integer from the user
+
+    Arguments:
+
+        title -- the dialog title
+        prompt -- the label text
+        **kw -- see SimpleDialog class
+
+    Return value is an integer
+    '''
+    d = _QueryInteger(title, prompt, **kw)
+    return d.result
+
+class _QueryFloat(_QueryDialog):
+    errormessage = "Not a floating point value."
+    def getresult(self):
+        return self.getdouble(self.entry.get())
+
+def askfloat(title, prompt, **kw):
+    '''get a float from the user
+
+    Arguments:
+
+        title -- the dialog title
+        prompt -- the label text
+        **kw -- see SimpleDialog class
+
+    Return value is a float
+    '''
+    d = _QueryFloat(title, prompt, **kw)
+    return d.result
+
+class _QueryString(_QueryDialog):
+    def __init__(self, *args, **kw):
+        if "show" in kw:
+            self.__show = kw["show"]
+            del kw["show"]
+        else:
+            self.__show = None
+        _QueryDialog.__init__(self, *args, **kw)
+
+    def body(self, master):
+        entry = _QueryDialog.body(self, master)
+        if self.__show is not None:
+            entry.configure(show=self.__show)
+        return entry
+
+    def getresult(self):
+        return self.entry.get()
