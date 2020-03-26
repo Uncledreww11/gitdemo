@@ -219,3 +219,71 @@ class Dialog(Toplevel):
             self.apply()
         finally:
             self.cancel()
+
+    def cancel(self, event=None):
+
+        # put focus back to the parent window
+        if self.parent is not None:
+            self.parent.focus_set()
+        self.destroy()
+
+    #
+    # command hooks
+
+    def validate(self):
+        '''validate the data
+
+        This method is called automatically to validate the data before the
+        dialog is destroyed. By default, it always validates OK.
+        '''
+
+        return 1 # override
+
+    def apply(self):
+        '''process the data
+
+        This method is called automatically to process the data, *after*
+        the dialog is destroyed. By default, it does nothing.
+        '''
+
+        pass # override
+
+
+# --------------------------------------------------------------------
+# convenience dialogues
+
+class _QueryDialog(Dialog):
+
+    def __init__(self, title, prompt,
+                 initialvalue=None,
+                 minvalue = None, maxvalue = None,
+                 parent = None):
+
+        if not parent:
+            parent = tkinter._default_root
+
+        self.prompt   = prompt
+        self.minvalue = minvalue
+        self.maxvalue = maxvalue
+
+        self.initialvalue = initialvalue
+
+        Dialog.__init__(self, parent, title)
+
+    def destroy(self):
+        self.entry = None
+        Dialog.destroy(self)
+
+    def body(self, master):
+
+        w = Label(master, text=self.prompt, justify=LEFT)
+        w.grid(row=0, padx=5, sticky=W)
+
+        self.entry = Entry(master, name="entry")
+        self.entry.grid(row=1, padx=5, sticky=W+E)
+
+        if self.initialvalue is not None:
+            self.entry.insert(0, self.initialvalue)
+            self.entry.select_range(0, END)
+
+        return self.entry
